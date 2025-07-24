@@ -1,5 +1,5 @@
 class Zone:
-    def __init__(self, id, name, plant_type, moisture_threshold, moisture ,ph_range, ph):
+    def __init__(self, id, name, plant_type, moisture_threshold, moisture, ph_range, ph):
         self.id = id
         self.name = name
         self.plant_type = [plant_type]
