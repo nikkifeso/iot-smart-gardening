@@ -62,7 +62,7 @@ for col, zone in zip(cols, zones):
         control_pump(zone.id, False)
         pump_status = "OFF"
 
-    pump_color = "green" if zone.pump_status else "red"
+    pump_color = "green" if pump_status == "ON" else "red"
 
     # Render zone info in its column
     with col:
