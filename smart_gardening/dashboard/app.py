@@ -97,12 +97,12 @@ with st.expander("➕ Add New Zone"):
                 ph_range=(ph_min, ph_max)
             )
             zones.append(new_zone)
+            st.session_state.zones = zones  # Synchronize session state with zones
             MOISTURE_THRESHOLDS[new_id] = moisture_threshold
             st.success(f"Zone '{name}' created successfully!")
 
     if "zones" not in st.session_state:
         st.session_state.zones = get_default_zones()
 
-    zones = st.session_state.zones
-    simulator = SensorSimulator(zones)
+    simulator = SensorSimulator(st.session_state.zones)  # Use session state directly
     simulator.simulate()
