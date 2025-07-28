@@ -2,7 +2,7 @@ class Zone:
     def __init__(self, id=None, name=None, plant_type=None, moisture_threshold=30, moisture=50, ph_range=(6.0, 7.5), ph=6.5, pump_status=False):
         self.id = id
         self.name = name
-        self.plant_type = plant_type if plant_type else []
+        self.plant_type = plant_type if plant_type else ""
         self.moisture_threshold = moisture_threshold
         # (min, max) tuple
         self.ph_range = ph_range  
