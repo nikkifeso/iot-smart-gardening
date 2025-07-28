@@ -106,7 +106,7 @@ class TestSensorSimulator(unittest.TestCase):
             self.assertGreaterEqual(zone.ph, 5.0)       # Not too acidic
             self.assertLessEqual(zone.ph, 8.5)          # Not too alkaline
     
-    @patch('random.uniform')
+    @patch('smart_gardening.simulator.simulator.random.uniform')
     def test_simulate_with_mocked_random(self, mock_uniform):
         """Test simulation with mocked random values"""
         # Mock random values
