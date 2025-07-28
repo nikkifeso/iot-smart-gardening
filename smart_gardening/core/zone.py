@@ -1,8 +1,8 @@
 class Zone:
-    def __init__(self, id=None, name=None, plant_type=None, moisture_threshold=30, moisture=50, ph_range=(6.0, 7.5), ph=6.5, pump_status=False):
+    def __init__(self, id=None, name=None, plant_type=None, moisture_threshold=30, moisture=50, ph_range=(6.0, 7.5), ph=6.5, pump_status="OFF"):
         self.id = id
         self.name = name
-        self.plant_type = plant_type if plant_type else ""
+        self.plant_type = plant_type
         self.moisture_threshold = moisture_threshold
         # (min, max) tuple
         self.ph_range = ph_range  
@@ -26,11 +26,14 @@ class Zone:
     def to_dict(self):
         """Convert zone to dictionary for database operations"""
         return {
+            'id': self.id,
             'name': self.name,
             'plant_type': self.plant_type,
+            'moisture': self.moisture,
+            'ph': self.ph,
             'moisture_threshold': self.moisture_threshold,
-            'ph_min': self.ph_range[0],
-            'ph_max': self.ph_range[1]
+            'ph_range': self.ph_range,
+            'pump_status': self.pump_status
         }
 
     @classmethod
@@ -44,3 +47,7 @@ class Zone:
             ph_range=(db_zone.ph_min, db_zone.ph_max)
         )
         return zone
+    
+    def __str__(self):
+        """String representation of the zone"""
+        return f"Zone(id={self.id}, name='{self.name}', plant_type='{self.plant_type}')"

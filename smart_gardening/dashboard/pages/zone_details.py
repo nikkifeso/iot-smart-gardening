@@ -35,7 +35,7 @@ st.markdown("""
         }
         
         /* Override any dark mode text */
-        .stMarkdown, .stText, .stButton, .stSelectbox, .stTextInput, .stNumberInput, .stTextArea, .stSlider {
+        .stMarkdown, .stText, .stSelectbox, .stTextInput, .stNumberInput, .stTextArea, .stSlider {
             color: #2c3e50 !important;
         }
         
@@ -63,17 +63,33 @@ st.markdown("""
         }
         .stButton > button {
             background-color: #35B925;
-            color: white;
+            color: white !important;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
-            font-weight: 600;
+            font-weight: bold;
             height: 50px;
             min-height: 50px;
             max-height: 50px;
         }
         .stButton > button:hover {
             background-color: #754D33 !important;
+            color: white !important;
+        }
+        .stButton > button:focus {
+            color: white !important;
+        }
+        /* Override any #2c3e50 color on buttons to white */
+        .stButton > button[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:hover[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:active[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:focus[style*="#2c3e50"] {
             color: white !important;
         }
         .zone-header {
@@ -144,6 +160,41 @@ st.markdown("""
         /* Hide any link icons */
         .stMarkdown h1 a::after, .stMarkdown h2 a::after, .stMarkdown h3 a::after, 
         .stMarkdown h4 a::after, .stMarkdown h5 a::after, .stMarkdown h6 a::after {
+            display: none !important;
+        }
+        
+        /* Hide pages navigation */
+        [data-testid="stSidebarNav"] {
+            display: none !important;
+        }
+        
+        /* Hide pages navigation container */
+        [data-testid="stSidebarNavItems"] {
+            display: none !important;
+        }
+        
+        /* Hide any page navigation elements */
+        .css-1d391kg {
+            display: none !important;
+        }
+        
+        /* Hide sidebar navigation */
+        .css-1lcbmhc {
+            display: none !important;
+        }
+        
+        /* Hide navigation toggle button */
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+        
+        /* Hide sidebar toggle */
+        .css-1rs6os {
+            display: none !important;
+        }
+        
+        /* Hide any sidebar controls */
+        [data-testid="stSidebar"] {
             display: none !important;
         }
     </style>
