@@ -1,0 +1,211 @@
+import unittest
+import tempfile
+import os
+import sys
+from datetime import datetime, timedelta
+
+# Add the project root to the path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from smart_gardening.db.database import Base, ZoneModel, PlantModel, SensorReading, PumpLog, init_db, session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+
+class TestDatabase(unittest.TestCase):
+    """Test cases for database models and operations"""
+    
+    def setUp(self):
+        """Set up test database"""
+        # Create a temporary database for testing
+        self.temp_db = tempfile.NamedTemporaryFile(delete=False, suffix='.db')
+        self.db_path = self.temp_db.name
+        self.temp_db.close()
+        
+        # Create engine and session for testing
+        self.engine = create_engine(f'sqlite:///{self.db_path}')
+        Base.metadata.create_all(self.engine)
+        
+        # Create test session
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.test_session = TestingSessionLocal()
+    
+    def tearDown(self):
+        """Clean up test database"""
+        self.test_session.close()
+        os.unlink(self.db_path)
+    
+    def test_zone_creation(self):
+        """Test creating a zone"""
+        zone = ZoneModel(
+            name="Test Zone",
+            plant_type="Vegetables",
+            moisture_threshold=30,
+            ph_min=6.0,
+            ph_max=7.5
+        )
+        
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Verify zone was created
+        saved_zone = self.test_session.query(ZoneModel).filter_by(name="Test Zone").first()
+        self.assertIsNotNone(saved_zone)
+        self.assertEqual(saved_zone.name, "Test Zone")
+        self.assertEqual(saved_zone.plant_type, "Vegetables")
+        self.assertEqual(saved_zone.moisture_threshold, 30)
+        self.assertEqual(saved_zone.ph_min, 6.0)
+        self.assertEqual(saved_zone.ph_max, 7.5)
+        self.assertIsNotNone(saved_zone.created_at)
+    
+    def test_plant_creation(self):
+        """Test creating a plant"""
+        # First create a zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create a plant
+        plant = PlantModel(
+            zone_id=zone.id,
+            name="Tomato",
+            plant_type="Vegetable",
+            planting_date=datetime.now().date(),
+            notes="Test tomato plant"
+        )
+        
+        self.test_session.add(plant)
+        self.test_session.commit()
+        
+        # Verify plant was created
+        saved_plant = self.test_session.query(PlantModel).filter_by(name="Tomato").first()
+        self.assertIsNotNone(saved_plant)
+        self.assertEqual(saved_plant.name, "Tomato")
+        self.assertEqual(saved_plant.zone_id, zone.id)
+        self.assertEqual(saved_plant.plant_type, "Vegetable")
+        self.assertIsNotNone(saved_plant.created_at)
+    
+    def test_sensor_reading_creation(self):
+        """Test creating sensor readings"""
+        # First create a zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create sensor reading
+        reading = SensorReading(
+            zone_id=zone.id,
+            moisture=45.5,
+            ph=6.8
+        )
+        
+        self.test_session.add(reading)
+        self.test_session.commit()
+        
+        # Verify reading was created
+        saved_reading = self.test_session.query(SensorReading).filter_by(zone_id=zone.id).first()
+        self.assertIsNotNone(saved_reading)
+        self.assertEqual(saved_reading.moisture, 45.5)
+        self.assertEqual(saved_reading.ph, 6.8)
+        self.assertEqual(saved_reading.zone_id, zone.id)
+        self.assertIsNotNone(saved_reading.timestamp)
+    
+    def test_pump_log_creation(self):
+        """Test creating pump logs"""
+        # First create a zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create pump log
+        pump_log = PumpLog(
+            zone_id=zone.id,
+            status="ON"
+        )
+        
+        self.test_session.add(pump_log)
+        self.test_session.commit()
+        
+        # Verify pump log was created
+        saved_log = self.test_session.query(PumpLog).filter_by(zone_id=zone.id).first()
+        self.assertIsNotNone(saved_log)
+        self.assertEqual(saved_log.status, "ON")
+        self.assertEqual(saved_log.zone_id, zone.id)
+        self.assertIsNotNone(saved_log.timestamp)
+    
+    def test_zone_plant_relationship(self):
+        """Test relationship between zones and plants"""
+        # Create a zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create multiple plants for the zone
+        plants = [
+            PlantModel(zone_id=zone.id, name="Tomato", plant_type="Vegetable"),
+            PlantModel(zone_id=zone.id, name="Basil", plant_type="Herb"),
+            PlantModel(zone_id=zone.id, name="Lettuce", plant_type="Vegetable")
+        ]
+        
+        for plant in plants:
+            self.test_session.add(plant)
+        self.test_session.commit()
+        
+        # Verify plants are associated with the zone
+        zone_plants = self.test_session.query(PlantModel).filter_by(zone_id=zone.id).all()
+        self.assertEqual(len(zone_plants), 3)
+        
+        plant_names = [plant.name for plant in zone_plants]
+        self.assertIn("Tomato", plant_names)
+        self.assertIn("Basil", plant_names)
+        self.assertIn("Lettuce", plant_names)
+    
+    def test_zone_sensor_relationship(self):
+        """Test relationship between zones and sensor readings"""
+        # Create a zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create multiple sensor readings
+        readings = [
+            SensorReading(zone_id=zone.id, moisture=40, ph=6.5),
+            SensorReading(zone_id=zone.id, moisture=45, ph=6.8),
+            SensorReading(zone_id=zone.id, moisture=50, ph=7.0)
+        ]
+        
+        for reading in readings:
+            self.test_session.add(reading)
+        self.test_session.commit()
+        
+        # Verify readings are associated with the zone
+        zone_readings = self.test_session.query(SensorReading).filter_by(zone_id=zone.id).all()
+        self.assertEqual(len(zone_readings), 3)
+        
+        moisture_values = [reading.moisture for reading in zone_readings]
+        self.assertIn(40, moisture_values)
+        self.assertIn(45, moisture_values)
+        self.assertIn(50, moisture_values)
+    
+    def test_last_watered_update(self):
+        """Test updating last watered timestamp"""
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Initially, last_watered should be None
+        self.assertIsNone(zone.last_watered)
+        
+        # Update last watered time
+        now = datetime.now()
+        zone.last_watered = now
+        self.test_session.commit()
+        
+        # Verify update
+        updated_zone = self.test_session.query(ZoneModel).filter_by(id=zone.id).first()
+        self.assertIsNotNone(updated_zone.last_watered)
+        self.assertEqual(updated_zone.last_watered, now)
+
+
+if __name__ == '__main__':
+    unittest.main() 

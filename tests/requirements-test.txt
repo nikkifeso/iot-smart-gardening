@@ -1,0 +1,36 @@
+# Testing dependencies for Smart Gardening Dashboard
+# Install with: pip install -r tests/requirements-test.txt
+
+# Core testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-html>=3.1.0
+
+# Coverage reporting
+coverage>=6.0.0
+
+# Mocking and test utilities
+unittest-mock>=1.0.1
+freezegun>=1.2.0
+
+# Database testing
+factory-boy>=3.2.0
+faker>=18.0.0
+
+# Performance testing
+pytest-benchmark>=4.0.0
+
+# Code quality testing
+flake8>=5.0.0
+black>=22.0.0
+isort>=5.10.0
+
+# Type checking
+mypy>=1.0.0
+
+# Security testing
+bandit>=1.7.0
+
+# Documentation testing
+doctest-ignore-unicode>=0.1.2 
