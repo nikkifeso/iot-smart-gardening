@@ -43,7 +43,7 @@ def update_database():
         
     except Exception as e:
         print(f"❌ Error updating database: {e}")
-        if conn:
+        if conn is not None:  # Safely check if conn is defined
             conn.close()
 
 if __name__ == "__main__":
