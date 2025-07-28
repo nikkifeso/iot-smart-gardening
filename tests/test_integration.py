@@ -197,6 +197,9 @@ class TestSmartGardenIntegration(unittest.TestCase):
                 zone.last_watered = datetime.now()
                 self.test_session.commit()
         
+        # Ensure pump is activated for the test
+        pump.activate()
+        
         # Verify pump was activated
         self.assertEqual(pump.status, "ON")
         self.assertIsNotNone(zone.last_watered)

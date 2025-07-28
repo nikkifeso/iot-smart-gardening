@@ -1,19 +1,18 @@
 import random
 
 def read_moisture(zone_id: str) -> float:
-    # Define zone-specific moisture ranges
-    zone_moisture_ranges = {
-        "zone_1": (20, 40),
-        "zone_2": (40, 60),
-        "zone_3": (60, 80),
-    }
+    """
+    Read moisture level for any zone.
     
-    # Get the moisture range for the specified zone
-    if zone_id in zone_moisture_ranges:
-        min_moisture, max_moisture = zone_moisture_ranges[zone_id]
-        return round(random.uniform(min_moisture, max_moisture), 2)
-    else:
-        raise ValueError(f"Invalid zone_id: {zone_id}")
+    Args:
+        zone_id: Zone identifier (e.g., 'zone_1', 'zone_5', 'garden_a')
+    
+    Returns:
+        float: Moisture reading between 10-90%
+    """
+    # Generate realistic moisture reading (10-90% range) for any zone
+    # This matches the behavior of the MoistureSensor class
+    return round(random.uniform(10, 90), 2)
 
 
 class MoistureSensor:
