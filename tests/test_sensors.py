@@ -63,8 +63,7 @@ class TestMoistureSensor(unittest.TestCase):
         reading = self.sensor.read()
         
         # Soil moisture should typically be between 10% and 90%
-        self.assertGreaterEqual(reading, 10)
-        self.assertLessEqual(reading, 90)
+        self.assertTrue(10 <= reading <= 90, "Reading should be between 10% and 90% inclusive.")
     
     @patch('random.uniform')
     def test_sensor_with_mocked_random(self, mock_uniform):
