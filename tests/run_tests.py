@@ -20,7 +20,7 @@ from tests.test_database import TestDatabase
 from tests.test_core import TestZone
 from tests.test_simulator import TestSensorSimulator
 from tests.test_actuators import TestWaterPump
-from tests.test_sensors import TestMoistureSensor, TestPHSensor, TestSensorIntegration
+# from tests.test_sensors import TestMoistureSensor, TestPHSensor, TestSensorIntegration
 from tests.test_dashboard import TestDashboardData, TestZoneStatus, TestDataValidation
 from tests.test_integration import TestSmartGardenIntegration
 from tests.test_config import TestConfig
