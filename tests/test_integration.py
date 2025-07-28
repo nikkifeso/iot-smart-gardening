@@ -86,8 +86,8 @@ class TestSmartGardenIntegration(unittest.TestCase):
         self.test_session.commit()
         
         # 3. Take sensor readings
-        moisture_reading = read_moisture(f"zone_{zone.id}")
-        ph_reading = read_ph(f"zone_{zone.id}")
+        moisture_reading = read_moisture(f"zone_{self.test_zone.id}")
+        ph_reading = read_ph(f"zone_{self.test_zone.id}")
         
         # 4. Store sensor readings
         sensor_reading = SensorReading(
