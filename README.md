@@ -223,7 +223,6 @@ iot-smart-gardening/
 
 ### Environment Variables
 
-- `DATABASE_URL` - Database connection string (default: SQLite)
 - `MOISTURE_THRESHOLD_DEFAULT` - Default moisture threshold (default: 30%)
 - `PH_MIN_DEFAULT` - Default minimum pH (default: 6.0)
 - `PH_MAX_DEFAULT` - Default maximum pH (default: 7.5)
