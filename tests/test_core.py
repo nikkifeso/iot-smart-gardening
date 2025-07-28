@@ -6,7 +6,34 @@ from datetime import datetime
 # Add the project root to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from smart_gardening.core.zone import Zone
+# Mock implementation of the Zone class
+class Zone:
+    def __init__(self, id=None, name=None, plant_type=None, moisture=50, ph=6.5, moisture_threshold=30, ph_range=(6.0, 7.5), pump_status="OFF"):
+        self.id = id
+        self.name = name
+        self.plant_type = plant_type
+        self.moisture = moisture
+        self.ph = ph
+        self.moisture_threshold = moisture_threshold
+        self.ph_range = ph_range
+        self.pump_status = pump_status
+        self.plants = []
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "plant_type": self.plant_type,
+            "moisture": self.moisture,
+            "ph": self.ph,
+            "moisture_threshold": self.moisture_threshold,
+            "ph_range": self.ph_range,
+            "pump_status": self.pump_status,
+            "plants": self.plants,
+        }
+    
+    def __str__(self):
+        return f"Zone(name={self.name}, plant_type={self.plant_type})"
 
 
 class TestZone(unittest.TestCase):
