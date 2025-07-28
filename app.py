@@ -1,13 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-# Home
-
-Smart Gardening Dashboard - Monitor and manage your garden zones
-"""
-
 import sys
 import os
-import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
@@ -21,94 +13,15 @@ init_db()
 
 # Page configuration
 st.set_page_config(
-    page_title="Home - Smart Gardening Dashboard", 
-    page_icon="🌱", 
+    page_title="Smart Gardening Dashboard", 
+    page_icon="🌱",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Custom CSS
 st.markdown("""
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Force light mode */
-        :root {
-            --background-color: #ffffff !important;
-            --text-color: #2c3e50 !important;
-        }
-        
-        /* Override Streamlit dark mode */
-        .stApp {
-            background-color: #ffffff !important;
-        }
-        
-        /* Force light background */
-        .main .block-container {
-            background-color: #ffffff !important;
-        }
-        
-        /* Override any dark mode text */
-        .stMarkdown, .stText, .stButton, .stSelectbox, .stTextInput, .stNumberInput, .stTextArea, .stSlider {
-            color: #2c3e50 !important;
-        }
-        
-        /* Ensure form elements are light */
-        .stForm {
-            background-color: #D4fd0 !important;
-        }
-        
-        /* Remove header links */
-        h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
-            text-decoration: none !important;
-            color: inherit !important;
-            pointer-events: none !important;
-        }
-        
-        /* Remove header link hover effects */
-        h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
-            text-decoration: none !important;
-            color: inherit !important;
-        }
-        
-        /* Remove link icon on hover */
-        h1 a::after, h2 a::after, h3 a::after, h4 a::after, h5 a::after, h6 a::after {
-            content: none !important;
-        }
-        
-        /* Hide any link icons */
-        .stMarkdown h1 a::after, .stMarkdown h2 a::after, .stMarkdown h3 a::after, 
-        .stMarkdown h4 a::after, .stMarkdown h5 a::after, .stMarkdown h6 a::after {
-            display: none !important;
-        }
-        
-        /* Metric value styling - dark text */
-        .stMetric [data-testid="metric-container"] div[data-testid="stMetricValue"] {
-            color: #2c3e50 !important;
-        }
-        
-        /* Metric label styling - dark text */
-        .stMetric [data-testid="metric-container"] div[data-testid="stMetricLabel"] {
-            color: #2c3e50 !important;
-        }
-        
-        /* Additional metric styling for better coverage */
-        .stMetric div[data-testid="stMetricValue"] {
-            color: #2c3e50 !important;
-        }
-        
-        .stMetric div[data-testid="stMetricLabel"] {
-            color: #2c3e50 !important;
-        }
-        
-        /* Target metric text directly */
-        .stMetric {
-            color: #2c3e50 !important;
-        }
-        
-        /* Ensure all text in metric containers is dark */
-        [data-testid="metric-container"] {
-            color: #2c3e50 !important;
-        }
         .title {
             font-size: 42px;
             color: #35B925;
@@ -128,7 +41,7 @@ st.markdown("""
         }
         .zone-name {
             font-size: 20px;
-            color: #754D33 !important;
+            color: #754D33;
             font-weight: bold;
             margin-bottom: 10px;
             text-align: center;
@@ -144,22 +57,10 @@ st.markdown("""
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
-            font-weight: 600;
-            height: 50px;
-            min-height: 50px;
-            max-height: 50px;
-            width: 100%;
+            font-weight: bold;
         }
         .stButton > button:hover {
-            background-color: #754D33 !important;
-            color: white !important;
-        }
-        .stButton > button:active {
-            color: white !important;
-        }
-        /* Paragraph text styling */
-        p {
-            color: #2c3e50 !important;
+            background-color: #88c030;
         }
         .metric-container {
             background-color: #D4fd0;
@@ -176,11 +77,11 @@ st.markdown("""
             border: 1px solid #88c030;
         }
         .status-good {
-            color: white !important;
+            color: #35B925;
             font-weight: bold;
         }
         .status-warning {
-            color: white !important;
+            color: #754D33;
             font-weight: bold;
         }
         /* Metric styling */
@@ -226,34 +127,11 @@ st.markdown("""
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background: #88c030;
         }
-        /* Hide the sidebar navigation for multipage apps */
-        [data-testid="stSidebar"] {
-            display: none;
-        }
-        [data-testid="collapsedControl"] {
-            display: none;
-        }
-        }
-        /* Optionally hide the sidebar toggle button */
-        button[title="Open sidebar"] {
-            display: none !important;
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# Title and Action buttons row
-title_col, _, btn_col1, btn_col2 = st.columns([3, 2, 1, 1])
-
-with title_col:
-    st.markdown('<div class="title"><i class="fas fa-seedling";"></i>Smart Gardening Dashboard</div>', unsafe_allow_html=True)
-
-with btn_col1:
-    if st.button("Add New Zone", key="add_zone_btn"):
-        st.switch_page("pages/add_zone.py")
-
-with btn_col2:
-    if st.button("Add Plant to Zone", key="add_plant_btn"):
-        st.switch_page("pages/add_plant.py")
+# Title
+st.markdown('<div class="title">🌿 Smart Gardening Dashboard</div>', unsafe_allow_html=True)
 
 # Load zones from database
 def load_zones_from_db():
@@ -298,7 +176,7 @@ simulator = SensorSimulator(zones)
 simulator.simulate()
 
 # Zone summary section
-st.markdown("### Garden Zones Overview", unsafe_allow_html=True)
+st.markdown("### 📍 Garden Zones Overview")
 zone_summary_cols = st.columns(len(zones))
 for i, zone in enumerate(zones):
     with zone_summary_cols[i]:
@@ -313,16 +191,22 @@ for i, zone in enumerate(zones):
 
 st.markdown("---")  # Separator line
 
+# Action buttons row
+col1, col2, col3 = st.columns([1, 1, 2])
 
+with col1:
+    if st.button("➕ Add New Zone", key="add_zone_btn"):
+        st.switch_page("pages/1_Add_Zone.py")
+
+with col2:
+    if st.button("🌱 Add Plant to Zone", key="add_plant_btn"):
+        st.switch_page("pages/2_Add_Plant.py")
 
 # Create horizontal scrollable container for zones
 st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
 
-# Create one column per zone
-cols = st.columns(len(zones))  # e.g., 3 zones = st.columns(3)
-
-# Display each zone in its column
-for col, zone in zip(cols, zones):
+# Display each zone in its own column
+for zone in zones:
     # Simulated values
     moisture = zone.moisture
     ph = zone.ph
@@ -333,34 +217,42 @@ for col, zone in zip(cols, zones):
     if moisture < threshold:
         control_pump(zone.id, True)
         pump_status = "ON"
-        # Update last watered time when pump is activated
-        zone.last_watered = datetime.datetime.now()
-        # Update database
-        db_zone = session.query(ZoneModel).filter(ZoneModel.id == zone.id).first()
-        if db_zone:
-            db_zone.last_watered = zone.last_watered
-            session.commit()
     else:
         control_pump(zone.id, False)
         pump_status = "OFF"
 
     pump_color = "green" if pump_status == "ON" else "red"
 
-    # Render zone info in its column
-    with col:
-          # Zone name
-        # st.markdown(f"<div class='zone-name'>{zone.name}</div>", unsafe_allow_html=True)
+    # Render zone info in its own column
+    st.markdown(f'<div class="zone-column">', unsafe_allow_html=True)
+    
+    # Zone header with ID and name
+    st.markdown(f"<div class='zone-header'>Zone {zone.id}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='zone-name'>{zone.name}</div>", unsafe_allow_html=True)
 
-       
-        # Zone header with ID and name
-        if st.button(f"Zone {zone.name}", key=f"zone_{zone.id}_header_btn"):
-            st.session_state.selected_zone_id = zone.id
-            st.switch_page("pages/zone_details.py")
+    # Zone details
+    st.markdown(f"<div class='metric-container'><strong>Plant Type:</strong> {zone.plant_type}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-container'><strong>Moisture Threshold:</strong> {threshold}%</div>", unsafe_allow_html=True)
+    
+    st.metric(label="Moisture Level (%)", value=moisture)
+    st.progress(min(int(moisture), 100))
+
+    st.metric(label="pH Level", value=ph)
+
+    # Pump status with color coding
+    pump_status_class = "status-good" if pump_status == "ON" else "status-warning"
+    st.markdown(f"<div class='metric-container'><strong>Pump Status:</strong> <span class='{pump_status_class}'>{pump_status}</span></div>", unsafe_allow_html=True)
+    
+    # Display plants in this zone
+    if hasattr(zone, 'plants') and zone.plants:
+        st.markdown("<div class='plant-list'><strong>Plants:</strong>", unsafe_allow_html=True)
+        for plant in zone.plants:
+            st.markdown(f"• {plant['name']} ({plant['type']})")
+        st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div class='plant-list'><em>No plants added yet</em></div>", unsafe_allow_html=True)
         
-      
-        st.metric(label="Moisture Level (%)", value=moisture)
-
-        st.metric(label="pH Level", value=ph)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 

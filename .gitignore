@@ -208,3 +208,73 @@ __marimo__/
 
 .DS_Store
 
+# Smart Gardening Project Specific
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+smart_garden.db
+smart_gardening/db/database.db
+
+# Streamlit specific
+.streamlit/
+
+# Log files
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Configuration files with sensitive data
+config_local.py
+secrets.py
+
+# Alembic migration files (if using database migrations)
+alembic/versions/*.py
+!alembic/versions/__init__.py
+
+# Sensor data exports
+exports/
+data_exports/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Node modules (if using any frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
