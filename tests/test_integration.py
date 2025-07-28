@@ -10,8 +10,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from smart_gardening.db.database import Base, ZoneModel, PlantModel, SensorReading, PumpLog, init_db
 from smart_gardening.core.zone import Zone
-from smart_gardening.sensors.moisture_sensor import MoistureSensor
-from smart_gardening.sensors.ph_sensor import PHSensor
+with patch('smart_gardening.sensors.moisture_sensor.MoistureSensor', autospec=True) as MockMoistureSensor:
+    with patch('smart_gardening.sensors.ph_sensor.PHSensor', autospec=True) as MockPHSensor:
 from smart_gardening.actuators.pump import WaterPump
 from smart_gardening.simulator.simulator import SensorSimulator
 from sqlalchemy import create_engine
