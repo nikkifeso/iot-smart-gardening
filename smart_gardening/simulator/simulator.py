@@ -1,5 +1,5 @@
 import random
-from core.zone import Zone
+from smart_gardening.core.zone import Zone
 
 class SensorSimulator:
     def __init__(self, zones) -> None:

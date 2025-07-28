@@ -1,0 +1,42 @@
+# Smart Gardening Dashboard - Development Requirements
+# Install with: pip install -r requirements-dev.txt
+
+# Include all production dependencies
+-r requirements-prod.txt
+
+# Testing Framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-html>=3.1.0
+coverage>=6.0.0
+
+# Mocking and Test Utilities
+unittest-mock>=1.0.1
+freezegun>=1.2.0
+
+# Database Testing
+factory-boy>=3.2.0
+faker>=18.0.0
+
+# Performance Testing
+pytest-benchmark>=4.0.0
+
+# Code Quality
+flake8>=5.0.0
+black>=22.0.0
+isort>=5.10.0
+
+# Type Checking
+mypy>=1.0.0
+
+# Security Testing
+bandit>=1.7.0
+
+# Documentation
+sphinx>=6.0.0
+sphinx-rtd-theme>=1.2.0
+doctest-ignore-unicode>=0.1.2
+
+# Pre-commit Hooks
+pre-commit>=3.0.0 

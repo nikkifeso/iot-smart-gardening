@@ -34,7 +34,7 @@ st.markdown("""
         }
         
         /* Override any dark mode text */
-        .stMarkdown, .stText, .stButton, .stSelectbox, .stTextInput, .stNumberInput, .stTextArea, .stSlider {
+        .stMarkdown, .stText, .stSelectbox, .stTextInput, .stNumberInput, .stTextArea, .stSlider {
             color: #2c3e50 !important;
         }
         
@@ -51,17 +51,33 @@ st.markdown("""
         }
         .stButton > button {
             background-color: #35B925;
-            color: white;
+            color: white !important;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
-            font-weight: 600;
+            font-weight: bold;
         }
         .stButton > button:hover {
             background-color: #754D33 !important;
             color: white !important;
         }
         .stButton > button:active {
+            color: white !important;
+        }
+        .stButton > button:focus {
+            color: white !important;
+        }
+        /* Override any #2c3e50 color on buttons to white */
+        .stButton > button[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:hover[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:active[style*="#2c3e50"] {
+            color: white !important;
+        }
+        .stButton > button:focus[style*="#2c3e50"] {
             color: white !important;
         }
         .stForm {
@@ -111,6 +127,41 @@ st.markdown("""
         /* Paragraph text styling */
         p {
             color: #2c3e50 !important;
+        }
+        
+        /* Hide pages navigation */
+        [data-testid="stSidebarNav"] {
+            display: none !important;
+        }
+        
+        /* Hide pages navigation container */
+        [data-testid="stSidebarNavItems"] {
+            display: none !important;
+        }
+        
+        /* Hide any page navigation elements */
+        .css-1d391kg {
+            display: none !important;
+        }
+        
+        /* Hide sidebar navigation */
+        .css-1lcbmhc {
+            display: none !important;
+        }
+        
+        /* Hide navigation toggle button */
+        [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+        
+        /* Hide sidebar toggle */
+        .css-1rs6os {
+            display: none !important;
+        }
+        
+        /* Hide any sidebar controls */
+        [data-testid="stSidebar"] {
+            display: none !important;
         }
         
         /* Form submit button styling - consistent with main buttons */
@@ -197,7 +248,7 @@ with st.form("add_zone_form"):
     
     zone_name = st.text_input("Zone Name", placeholder="e.g., Vegetable Garden, Herb Corner")
     plant_type = st.text_input("Plant Type", placeholder="e.g., Tomatoes, Herbs, Flowers")
-    moisture_threshold = st.slider("Moisture Threshold (%)", min_value=10, max_value=90, value=30, step=5)
+    moisture_threshold = st.number_input("Moisture Threshold (%)", min_value=10, max_value=90, value=30, step=5)
     
     ph_min = st.number_input("pH Range - Minimum", min_value=0.0, max_value=14.0, value=6.0, step=0.1)
     ph_max = st.number_input("pH Range - Maximum", min_value=0.0, max_value=14.0, value=7.0, step=0.1)

@@ -42,7 +42,7 @@ class PumpLog(Base):
     __tablename__ = 'pump_logs'
     id = Column(Integer, primary_key=True, autoincrement=True)
     zone_id = Column(Integer, nullable=False)
-    status = Column(Boolean)
+    status = Column(String)  # Changed from Boolean to String to support "ON"/"OFF"
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
 # Create tables
