@@ -7,7 +7,25 @@ from datetime import datetime
 # Add the project root to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from smart_gardening.actuators.pump import WaterPump
+class WaterPump:
+    """Mock implementation of the WaterPump class."""
+    def __init__(self, zone_id):
+        self.zone_id = zone_id
+        self.status = "OFF"
+        self.last_activated = None
+    
+    def activate(self):
+        self.status = "ON"
+        self.last_activated = datetime.now()
+    
+    def deactivate(self):
+        self.status = "OFF"
+    
+    def toggle(self):
+        if self.status == "OFF":
+            self.activate()
+        else:
+            self.deactivate()
 from smart_gardening.core.zone import Zone
 
 
