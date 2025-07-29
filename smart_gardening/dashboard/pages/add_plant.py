@@ -81,7 +81,7 @@ st.markdown("""
             color: #2c3e50 !important;
         }
         .stForm {
-            background-color: #D4fd0;
+            background-color: #D4fdf0;
             padding: 15px;
             border-radius: 10px;
             border: 2px solid #88c030;
