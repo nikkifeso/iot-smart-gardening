@@ -49,7 +49,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Moisture and pH level monitoring
 - Pump status indicators
 - Last watered timestamps
-![alt text](image-url)
+![home](screenshots/Homepage.png)
 
 ### Zone Management
 
