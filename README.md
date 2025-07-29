@@ -10,7 +10,6 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [Database Schema](#database-schema)
-- [API Endpoints](#api-endpoints)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [License](#license)
