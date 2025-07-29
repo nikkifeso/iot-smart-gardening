@@ -259,7 +259,6 @@ iot-smart-gardening/
 ### Color Scheme
 
 - **Primary Green**: `#35B925` - Main brand color
-- **Secondary Brown**: `#754D33` - Hover states and accents
 - **Light Green**: `#D4fd0` - Background elements
 - **Medium Green**: `#88c030` - Secondary elements
 - **Text Color**: `#2c3e50` - Dark blue-gray for readability
