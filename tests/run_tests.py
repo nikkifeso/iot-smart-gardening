@@ -24,6 +24,7 @@ from tests.test_actuators import TestWaterPump
 from tests.test_dashboard import TestDashboardData, TestZoneStatus, TestDataValidation
 from tests.test_integration import TestSmartGardenIntegration
 from tests.test_config import TestConfig
+from tests.test_remove_plant_ui import TestRemovePlantUI
 
 
 class TestRunner:
@@ -54,7 +55,8 @@ class TestRunner:
             TestZoneStatus,
             TestDataValidation,
             TestSmartGardenIntegration,
-            TestConfig
+            TestConfig,
+            TestRemovePlantUI
         ]
         
         for test_class in test_classes:

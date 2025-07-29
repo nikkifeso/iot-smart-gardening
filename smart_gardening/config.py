@@ -1,15 +1,13 @@
-# config.py
 import os
 
 ZONES = ["A", "B", "C"]
 
 MOISTURE_THRESHOLDS = {
-    "A": 40,  # Zone A: minimum acceptable moisture level
-    "B": 45,  # Zone B: minimum acceptable moisture level
-    "C": 50,  # Zone C: minimum acceptable moisture level
+    "A": 40,
+    "B": 45,
+    "C": 50,
 }
 
-# Optional: pH ranges or other parameters
 PH_RANGES = {
     "A": (6.0, 6.8),
     "B": (6.2, 7.0),
@@ -17,7 +15,7 @@ PH_RANGES = {
 }
 
 SCHEDULE = {
-    "hour": 6,  # Simulated schedule time for daily watering check
+    "hour": 6,
 }
 
 
@@ -25,25 +23,21 @@ class Config:
     """Configuration management for the Smart Gardening Dashboard"""
     
     def __init__(self):
-        # Database configuration
         db_url = os.getenv('DATABASE_URL', 'sqlite:///smart_garden.db')
         self.DATABASE_URL = db_url if db_url else 'sqlite:///smart_garden.db'
         
-        # Sensor configuration
         try:
             interval = int(os.getenv('SENSOR_READING_INTERVAL', '300'))
             self.SENSOR_READING_INTERVAL = interval if interval > 0 else 300
         except (ValueError, TypeError):
             self.SENSOR_READING_INTERVAL = 300
         
-        # Pump configuration
         try:
             duration = int(os.getenv('PUMP_ACTIVATION_DURATION', '30'))
             self.PUMP_ACTIVATION_DURATION = duration if duration > 0 else 30
         except (ValueError, TypeError):
             self.PUMP_ACTIVATION_DURATION = 30
         
-        # Default thresholds
         try:
             threshold = int(os.getenv('DEFAULT_MOISTURE_THRESHOLD', '30'))
             self.DEFAULT_MOISTURE_THRESHOLD = threshold if threshold >= 0 else 30

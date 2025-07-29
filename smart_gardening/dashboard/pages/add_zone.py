@@ -6,14 +6,12 @@ import streamlit as st
 from db.database import session, ZoneModel
 from core.zone import Zone
 
-# Page configuration
 st.set_page_config(
     page_title="Add Zone - Smart Gardening Dashboard",
     page_icon="➕",
     layout="wide"
 )
 
-# Custom CSS
 st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -50,35 +48,35 @@ st.markdown("""
             margin-bottom: 30px;
         }
         .stButton > button {
-            background-color: #35B925;
-            color: white !important;
+            background-color: #e8f5e8;
+            color: #2c3e50 !important;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             font-weight: bold;
         }
         .stButton > button:hover {
-            background-color: #754D33 !important;
-            color: white !important;
+            background-color: #d4e8d4 !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:active {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:focus {
-            color: white !important;
+            color: #2c3e50 !important;
         }
-        /* Override any #2c3e50 color on buttons to white */
+        /* Override any #2c3e50 color on buttons to dark */
         .stButton > button[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:hover[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:active[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:focus[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stForm {
             background-color: #D4fd0;
@@ -102,18 +100,21 @@ st.markdown("""
             border: 1px solid #f5c6cb;
             margin: 10px 0;
         }
-        /* Improve text readability */
+        /* Input field text color - white */
         .stTextInput > div > div > input {
-            color: #333333;
+            color: white !important;
         }
         .stNumberInput > div > div > input {
-            color: #333333;
+            color: white !important;
         }
         .stTextArea > div > div > textarea {
-            color: #333333;
+            color: white !important;
+        }
+        .stSelectbox > div > div > div {
+            color: white !important;
         }
         .stSlider > div > div > div > div {
-            color: #333333;
+            color: white !important;
         }
         /* Form labels */
         .stForm label {
@@ -166,8 +167,8 @@ st.markdown("""
         
         /* Form submit button styling - consistent with main buttons */
         .stFormSubmitButton > button {
-            background-color: #35B925 !important;
-            color: white !important;
+            background-color: #e8f5e8 !important;
+            color: #2c3e50 !important;
             border: none !important;
             padding: 10px 20px !important;
             border-radius: 5px !important;
@@ -179,12 +180,27 @@ st.markdown("""
         }
         
         .stFormSubmitButton > button:hover {
-            background-color: #754D33 !important;
-            color: white !important;
+            background-color: #d4e8d4 !important;
+            color: #2c3e50 !important;
         }
         
         .stFormSubmitButton > button:active {
-            color: white !important;
+            color: #2c3e50 !important;
+        }
+        
+        /* Cancel button styling - light red background */
+        .stFormSubmitButton > button:has-text("Cancel") {
+            background-color: #ffebee !important;
+            color: #c62828 !important;
+        }
+        
+        .stFormSubmitButton > button:has-text("Cancel"):hover {
+            background-color: #ffcdd2 !important;
+            color: #c62828 !important;
+        }
+        
+        .stFormSubmitButton > button:has-text("Cancel"):active {
+            color: #c62828 !important;
         }
         
         /* Remove header links */
@@ -233,16 +249,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title
 st.markdown('<h1 class="title"><i class="fas fa-plus-circle"></i> Add New Zone</h1>', unsafe_allow_html=True)
 
-# Back button
-if st.button("Back to Dashboard", key="back_to_dashboard"):
+if st.button("← Back to Dashboard", key="back_to_dashboard"):
     st.switch_page("app.py")
 
 st.markdown("---")
 
-# Zone creation form
 with st.form("add_zone_form"):
     st.markdown("### Zone Information", unsafe_allow_html=True)
     
@@ -264,11 +277,9 @@ with st.form("add_zone_form"):
     with col3:
         cancel = st.form_submit_button("Cancel")
 
-# Handle form submission
 if submit:
     if zone_name and plant_type:
         try:
-            # Create new zone
             new_zone = ZoneModel(
                 name=zone_name,
                 plant_type=plant_type,
@@ -290,7 +301,6 @@ if submit:
             </div>
             """, unsafe_allow_html=True)
             
-            # Auto-redirect after 3 seconds
             st.markdown("""
             <script>
                 setTimeout(function(){
