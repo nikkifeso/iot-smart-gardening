@@ -58,7 +58,7 @@ st.markdown("""
         
         /* Ensure form elements are light */
         .stForm {
-            background-color: #D4fd0 !important;
+            background-color: #D4FDF0 !important;
         }
         
         /* Hide pages navigation */
