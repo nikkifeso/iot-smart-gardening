@@ -156,10 +156,10 @@ st.markdown("""
             margin: 10px 0;
         }
         .plant-card {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
+            background-color: #e8f5e8;
             padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #35B925;
             margin: 10px 0;
         }
 
