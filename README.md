@@ -22,7 +22,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - **Real-time Zone Monitoring** - Monitor multiple garden zones simultaneously
 - **Automated Watering System** - Smart pump control based on moisture thresholds
 - **pH Level Tracking** - Monitor soil pH levels for optimal plant growth
-- **Plant Management** - Add and track individual plants within zones
+- **Plant Management** - Add, track, and remove individual plants within zones
 - **Sensor Data Visualization** - Historical charts and analytics for sensor readings
 
 ### User Interface
@@ -61,6 +61,8 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Add plants to specific zones
 - Track planting dates and notes
 - View plants by zone
+- Remove plants with confirmation dialog
+- Maintain data integrity during plant removal
 
 ### Zone Details
 
@@ -139,6 +141,15 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
    - Notes (optional)
 4. Click "Add Plant"
 
+### Removing Plants from Zones
+
+1. Navigate to the zone details page
+2. Locate the plant you want to remove
+3. Click the red "❌" button next to the plant
+4. Review the plant information on the confirmation page
+5. Click "❌ Remove Plant" to confirm removal
+6. The plant will be permanently removed from the database
+
 ### Viewing Zone Details
 
 1. Click on any zone header on the main dashboard
@@ -159,7 +170,8 @@ iot-smart-gardening/
 │   │   └── pages/
 │   │       ├── add_zone.py        # Add zone page
 │   │       ├── add_plant.py       # Add plant page
-│   │       └── zone_details.py    # Zone details page
+│   │       ├── zone_details.py    # Zone details page
+│   │       └── remove_plant.py    # Remove plant confirmation page
 │   ├── core/
 │   │   └── zone.py               # Zone model and logic
 │   ├── db/
@@ -203,6 +215,12 @@ iot-smart-gardening/
 - `planting_date` - Date when plant was added
 - `notes` - Additional plant information
 - `created_at` - Plant creation timestamp
+
+### Database Functions
+
+- `remove_plant(plant_id, db_session)` - Safely remove a plant with validation
+- `get_plant_by_id(plant_id)` - Retrieve a plant by its ID with validation
+- `get_zone_by_id(zone_id)` - Retrieve a zone by its ID with validation
 
 ### Sensor Readings Table
 
@@ -257,6 +275,17 @@ iot-smart-gardening/
 - Maintain consistent button styling
 - Follow the existing CSS patterns
 - Test on different screen sizes
+
+### Testing
+
+The project includes comprehensive test coverage:
+
+- **Database Tests** - Plant removal, validation, and data integrity
+- **UI Tests** - Remove plant workflow and navigation
+- **Integration Tests** - End-to-end functionality testing
+- **Unit Tests** - Individual component testing
+
+Run tests with: `python tests/run_tests.py`
 
 ## Contributing
 

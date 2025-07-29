@@ -341,11 +341,15 @@ if recent_readings:
     tab1, tab2 = st.tabs(["📊 Chart View", "📋 Table View"])
     
     with tab1:
-        st.markdown("#### Moisture Levels Over Time")
-        st.line_chart(df.set_index('Date')['Moisture (%)'])
+        col1, col2 = st.columns(2)
         
-        st.markdown("#### pH Levels Over Time")
-        st.line_chart(df.set_index('Date')['pH'])
+        with col1:
+            st.markdown("#### Moisture Levels Over Time")
+            st.line_chart(df.set_index('Date')['Moisture (%)'])
+        
+        with col2:
+            st.markdown("#### pH Levels Over Time")
+            st.line_chart(df.set_index('Date')['pH'])
     
     
     with tab2:
