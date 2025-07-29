@@ -23,7 +23,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - **Automated Watering System** - Smart pump control based on moisture thresholds
 - **pH Level Tracking** - Monitor soil pH levels for optimal plant growth
 - **Plant Management** - Add, track, and remove individual plants within zones
-- **Sensor Data Visualization** - Historical charts and analytics for sensor readings
+- **Sensor Data Visualisation** - Historical charts and analytics for sensor readings
 
 ### User Interface
 
@@ -58,6 +58,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Configure plant types and growing conditions
   ![add zone](screenshots/add-zone-1.png)
   <br>
+  <br>
   ![add zone](screenshots/add-zone-2.png)
 
 ### Plant Management
@@ -65,6 +66,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Add plants to specific zones
 - Track planting dates and notes
   ![add plant](screenshots/add-plant-1.png)
+  <br>
   <br>
   ![add plant](screenshots/add-plant-2.png)
 - View plants by zone
@@ -79,6 +81,9 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Historical data visualization
 - Plant inventory within zones
 ![zone details](screenshots/zone-details-1.png)
+<br>
+<br>
+![zone details](screenshots/zone-details-2.png)
 
 ## Installation
 
