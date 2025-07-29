@@ -82,7 +82,6 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Plant inventory within zones
 ![zone details](screenshots/zone-details-1.png)
 <br>
-<br>
 ![zone details](screenshots/zone-details-2.png)
 
 ## Installation
