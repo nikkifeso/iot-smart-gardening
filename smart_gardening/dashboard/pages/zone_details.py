@@ -36,10 +36,7 @@ st.markdown("""
             color: #2c3e50 !important;
         }
         
-        /* Ensure form elements are light */
-        .stForm {
-            background-color: #D4fd0 !important;
-        }
+
         
         /* Metric value styling - dark text */
         .stMetric [data-testid="metric-container"] div[data-testid="stMetricValue"] {
