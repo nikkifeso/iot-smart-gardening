@@ -31,7 +31,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - **Multi-page Navigation** - Seamless navigation between different sections
 - **Real-time Updates** - Live sensor data and status updates
 - **Interactive Charts** - Visual representation of moisture and pH trends
-- **Professional Styling** - Consistent green/brown color scheme throughout
+- **Professional Styling** - Consistent color scheme throughout
 
 ### Technical Features
 
