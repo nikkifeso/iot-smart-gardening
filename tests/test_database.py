@@ -60,12 +60,10 @@ class TestDatabase(unittest.TestCase):
     
     def test_plant_creation(self):
         """Test creating a plant"""
-        # First create a zone
         zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
         self.test_session.add(zone)
         self.test_session.commit()
         
-        # Create a plant
         plant = PlantModel(
             zone_id=zone.id,
             name="Tomato",
@@ -84,6 +82,193 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(saved_plant.zone_id, zone.id)
         self.assertEqual(saved_plant.plant_type, "Vegetable")
         self.assertIsNotNone(saved_plant.created_at)
+    
+    def test_plant_removal(self):
+        """Test removing a plant"""
+        from smart_gardening.db.database import remove_plant, get_plant_by_id
+        
+        # Create a test zone
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        # Create a test plant
+        plant = PlantModel(
+            zone_id=zone.id,
+            name="Test Plant",
+            plant_type="Vegetable",
+            planting_date=datetime.now(),
+            notes="Test plant for removal"
+        )
+        self.test_session.add(plant)
+        self.test_session.commit()
+        
+        plant_id = plant.id
+        self.assertIsNotNone(plant_id)
+        
+        # Verify plant exists using the same session
+        retrieved_plant = self.test_session.query(PlantModel).filter(PlantModel.id == plant_id).first()
+        self.assertIsNotNone(retrieved_plant)
+        self.assertEqual(retrieved_plant.name, "Test Plant")
+        
+        # Remove the plant using the test session
+        success = remove_plant(plant_id, self.test_session)
+        self.assertTrue(success)
+        
+        # Verify plant is gone using the same session
+        retrieved_plant_after = self.test_session.query(PlantModel).filter(PlantModel.id == plant_id).first()
+        self.assertIsNone(retrieved_plant_after)
+    
+    def test_remove_nonexistent_plant(self):
+        """Test removing a plant that doesn't exist"""
+        from smart_gardening.db.database import remove_plant
+        
+        # Try to remove a plant with a non-existent ID
+        success = remove_plant(99999, self.test_session)
+        self.assertFalse(success)
+    
+    def test_remove_plant_with_sensor_readings(self):
+        """Test removing a plant when zone has sensor readings"""
+        from smart_gardening.db.database import remove_plant
+        
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        plant = PlantModel(
+            zone_id=zone.id,
+            name="Test Plant",
+            plant_type="Vegetable",
+            planting_date=datetime.now(),
+            notes="Test plant for removal"
+        )
+        self.test_session.add(plant)
+        self.test_session.commit()
+        
+        reading = SensorReading(
+            zone_id=zone.id,
+            moisture=45.5,
+            ph=6.8
+        )
+        self.test_session.add(reading)
+        self.test_session.commit()
+        
+        success = remove_plant(plant.id, self.test_session)
+        self.assertTrue(success)
+        
+        retrieved_plant = self.test_session.query(PlantModel).filter(PlantModel.id == plant.id).first()
+        self.assertIsNone(retrieved_plant)
+        
+        sensor_readings = self.test_session.query(SensorReading).filter(SensorReading.zone_id == zone.id).all()
+        self.assertEqual(len(sensor_readings), 1)
+    
+    def test_remove_plant_with_pump_logs(self):
+        """Test removing a plant when zone has pump logs"""
+        from smart_gardening.db.database import remove_plant
+        
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        plant = PlantModel(
+            zone_id=zone.id,
+            name="Test Plant",
+            plant_type="Vegetable",
+            planting_date=datetime.now(),
+            notes="Test plant for removal"
+        )
+        self.test_session.add(plant)
+        self.test_session.commit()
+        
+        pump_log = PumpLog(
+            zone_id=zone.id,
+            status="ON"
+        )
+        self.test_session.add(pump_log)
+        self.test_session.commit()
+        
+        success = remove_plant(plant.id, self.test_session)
+        self.assertTrue(success)
+        
+        retrieved_plant = self.test_session.query(PlantModel).filter(PlantModel.id == plant.id).first()
+        self.assertIsNone(retrieved_plant)
+        
+        pump_logs = self.test_session.query(PumpLog).filter(PumpLog.zone_id == zone.id).all()
+        self.assertEqual(len(pump_logs), 1)
+    
+    def test_remove_multiple_plants_from_zone(self):
+        """Test removing multiple plants from the same zone"""
+        from smart_gardening.db.database import remove_plant
+        
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        plants = []
+        for i in range(3):
+            plant = PlantModel(
+                zone_id=zone.id,
+                name=f"Test Plant {i+1}",
+                plant_type="Vegetable",
+                planting_date=datetime.now(),
+                notes=f"Test plant {i+1} for removal"
+            )
+            self.test_session.add(plant)
+            plants.append(plant)
+        
+        self.test_session.commit()
+        
+        zone_plants = self.test_session.query(PlantModel).filter(PlantModel.zone_id == zone.id).all()
+        self.assertEqual(len(zone_plants), 3)
+        
+        success1 = remove_plant(plants[0].id, self.test_session)
+        self.assertTrue(success1)
+        
+        success2 = remove_plant(plants[1].id, self.test_session)
+        self.assertTrue(success2)
+        
+        remaining_plants = self.test_session.query(PlantModel).filter(PlantModel.zone_id == zone.id).all()
+        self.assertEqual(len(remaining_plants), 1)
+        self.assertEqual(remaining_plants[0].name, "Test Plant 3")
+    
+    def test_remove_plant_invalid_id(self):
+        """Test removing a plant with invalid ID types"""
+        from smart_gardening.db.database import remove_plant
+        
+        success = remove_plant(None, self.test_session)
+        self.assertFalse(success)
+        
+        success = remove_plant(-1, self.test_session)
+        self.assertFalse(success)
+        
+        success = remove_plant(0, self.test_session)
+        self.assertFalse(success)
+    
+    def test_get_plant_by_id_functionality(self):
+        """Test the get_plant_by_id function"""
+        from smart_gardening.db.database import get_plant_by_id
+        
+        zone = ZoneModel(name="Test Zone", plant_type="Vegetables")
+        self.test_session.add(zone)
+        self.test_session.commit()
+        
+        plant = PlantModel(
+            zone_id=zone.id,
+            name="Test Plant",
+            plant_type="Vegetable",
+            planting_date=datetime.now(),
+            notes="Test plant"
+        )
+        self.test_session.add(plant)
+        self.test_session.commit()
+        
+        retrieved_plant = self.test_session.query(PlantModel).filter(PlantModel.id == plant.id).first()
+        self.assertIsNotNone(retrieved_plant)
+        self.assertEqual(retrieved_plant.name, "Test Plant")
+        self.assertEqual(retrieved_plant.zone_id, zone.id)
+        
+        non_existent_plant = self.test_session.query(PlantModel).filter(PlantModel.id == 99999).first()
+        self.assertIsNone(non_existent_plant)
     
     def test_sensor_reading_creation(self):
         """Test creating sensor readings"""

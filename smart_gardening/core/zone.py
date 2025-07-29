@@ -4,7 +4,6 @@ class Zone:
         self.name = name
         self.plant_type = plant_type
         self.moisture_threshold = moisture_threshold
-        # (min, max) tuple
         self.ph_range = ph_range  
         self.moisture = moisture
         self.ph = ph

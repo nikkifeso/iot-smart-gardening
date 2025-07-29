@@ -10,8 +10,6 @@ def read_moisture(zone_id: str) -> float:
     Returns:
         float: Moisture reading between 10-90%
     """
-    # Generate realistic moisture reading (10-90% range) for any zone
-    # This matches the behavior of the MoistureSensor class
     return round(random.uniform(10, 90), 2)
 
 
@@ -24,7 +22,6 @@ class MoistureSensor:
     
     def read(self) -> float:
         """Read current moisture level"""
-        # Generate realistic moisture reading (10-90% range)
         reading = round(random.uniform(10, 90), 2)
         self.current_reading = reading
         return reading

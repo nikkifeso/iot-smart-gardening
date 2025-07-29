@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """
-# Home
-
 Smart Gardening Dashboard - Monitor and manage your garden zones
 """
 
@@ -13,13 +10,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
 from simulator.simulator import SensorSimulator, get_default_zones
 from actuators.pump import control_pump
-from config import ZONES, MOISTURE_THRESHOLDS
+from config import ZONES, MOISTURE_THRESHOLDS, PH_RANGES
 from core.zone import Zone
 
 from db.database import init_db, session, SensorReading, ZoneModel, PlantModel
 init_db()
 
-# Page configuration
 st.set_page_config(
     page_title="Home - Smart Gardening Dashboard", 
     page_icon="🌱", 
@@ -27,7 +23,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS
 st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -81,32 +76,28 @@ st.markdown("""
             display: none !important;
         }
         
-        /* Metric value styling - dark text */
-        .stMetric [data-testid="metric-container"] div[data-testid="stMetricValue"] {
+        /* Metric styling - dark text */
+        .stMetric, [data-testid="metric-container"] {
             color: #2c3e50 !important;
         }
         
-        /* Metric label styling - dark text */
-        .stMetric [data-testid="metric-container"] div[data-testid="stMetricLabel"] {
-            color: #2c3e50 !important;
-        }
-        
-        /* Additional metric styling for better coverage */
+        /* Ensure metric values have dark text */
         .stMetric div[data-testid="stMetricValue"] {
             color: #2c3e50 !important;
         }
         
+        /* Ensure metric labels have dark text */
         .stMetric div[data-testid="stMetricLabel"] {
             color: #2c3e50 !important;
         }
         
-        /* Target metric text directly */
-        .stMetric {
+        /* Target metric value text specifically */
+        .stMetric [data-testid="stMetricValue"] {
             color: #2c3e50 !important;
         }
         
-        /* Ensure all text in metric containers is dark */
-        [data-testid="metric-container"] {
+        /* Target metric label text specifically */
+        .stMetric [data-testid="stMetricLabel"] {
             color: #2c3e50 !important;
         }
         
@@ -174,8 +165,8 @@ st.markdown("""
             margin-bottom: 20px;
         }
         .stButton > button {
-            background-color: #35B925;
-            color: white !important;
+            background-color: #e8f5e8;
+            color: #2c3e50 !important;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -186,27 +177,27 @@ st.markdown("""
             width: 100%;
         }
         .stButton > button:hover {
-            background-color: #754D33 !important;
-            color: white !important;
+            background-color: #d4e8d4 !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:active {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:focus {
-            color: white !important;
+            color: #2c3e50 !important;
         }
-        /* Override any #2c3e50 color on buttons to white */
+        /* Override any #2c3e50 color on buttons to dark */
         .stButton > button[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:hover[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:active[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:focus[style*="#2c3e50"] {
-            color: white !important;
+            color: #2c3e50 !important;
         }
         /* Paragraph text styling */
         p {
@@ -295,7 +286,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title and Action buttons row
 title_col, _, btn_col1, btn_col2 = st.columns([3, 2, 1, 1])
 
 with title_col:
@@ -309,7 +299,6 @@ with btn_col2:
     if st.button("Add Plant to Zone", key="add_plant_btn"):
         st.switch_page("pages/add_plant.py")
 
-# Load zones from database
 def load_zones_from_db():
     """Load zones from database and convert to Zone objects"""
     db_zones = session.query(ZoneModel).all()
@@ -317,7 +306,6 @@ def load_zones_from_db():
     
     for db_zone in db_zones:
         zone = Zone.from_db_model(db_zone)
-        # Load plants for this zone
         plants = session.query(PlantModel).filter(PlantModel.zone_id == db_zone.id).all()
         zone.plants = [
             {
@@ -332,18 +320,15 @@ def load_zones_from_db():
     
     return zones
 
-# Initialize zones from database or default
 if "zones" not in st.session_state:
     db_zones = load_zones_from_db()
     if not db_zones:
-        # If no zones in DB, create default zones
         default_zones = get_default_zones()
         for zone in default_zones:
-            # Save default zones to database
             db_zone = ZoneModel(**zone.to_dict())
             session.add(db_zone)
             session.commit()
-            zone.id = db_zone.id  # Update with database ID
+            zone.id = db_zone.id
         db_zones = load_zones_from_db()
     st.session_state.zones = db_zones
 
@@ -351,45 +336,43 @@ zones = st.session_state.zones
 simulator = SensorSimulator(zones)
 simulator.simulate()
 
-# Zone summary section
 st.markdown("### Garden Zones Overview", unsafe_allow_html=True)
 zone_summary_cols = st.columns(len(zones))
 for i, zone in enumerate(zones):
     with zone_summary_cols[i]:
         moisture_status = "🟢 Good" if zone.moisture >= MOISTURE_THRESHOLDS.get(zone.id, 30) else "🔴 Low"
+        if zone.ph_out_of_range():
+            if zone.ph < zone.ph_range[0]:
+                ph_status = "🔴 Too Acidic"
+            else:
+                ph_status = "🔵 Too Alkaline"
+        else:
+            ph_status = "🟢 Good"
         st.markdown(f"""
         <div class='metric-container'>
         <strong>Zone {zone.id} - {zone.name}</strong><br>
         Plant Type: {zone.plant_type}<br>
-        Moisture: {moisture_status} ({zone.moisture}%)
+        Moisture: {moisture_status} <br>
+        pH: {ph_status}
         </div>
         """, unsafe_allow_html=True)
 
-st.markdown("---")  # Separator line
+st.markdown("---")
 
-
-
-# Create horizontal scrollable container for zones
 st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
 
-# Create one column per zone
-cols = st.columns(len(zones))  # e.g., 3 zones = st.columns(3)
+cols = st.columns(len(zones))
 
-# Display each zone in its column
 for col, zone in zip(cols, zones):
-    # Simulated values
     moisture = zone.moisture
     ph = zone.ph
-    threshold = MOISTURE_THRESHOLDS.get(zone.id, 30)  # Default threshold if not found
+    threshold = MOISTURE_THRESHOLDS.get(zone.id, 30)
     pump_status = zone.pump_status
 
-    # Control pump
     if moisture < threshold:
         control_pump(zone.id, True)
         pump_status = "ON"
-        # Update last watered time when pump is activated
         zone.last_watered = datetime.datetime.now()
-        # Update database
         db_zone = session.query(ZoneModel).filter(ZoneModel.id == zone.id).first()
         if db_zone:
             db_zone.last_watered = zone.last_watered
@@ -400,25 +383,16 @@ for col, zone in zip(cols, zones):
 
     pump_color = "green" if pump_status == "ON" else "red"
 
-    # Render zone info in its column
     with col:
-          # Zone name
-        # st.markdown(f"<div class='zone-name'>{zone.name}</div>", unsafe_allow_html=True)
-
-       
-        # Zone header with ID and name
         if st.button(f"Zone {zone.name}", key=f"zone_{zone.id}_header_btn"):
             st.session_state.selected_zone_id = zone.id
             st.switch_page("pages/zone_details.py")
         
-      
         st.metric(label="Moisture Level (%)", value=moisture)
-
-        st.metric(label="pH Level", value=ph)
+        st.metric(label="pH Level", value=ph, delta=None)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Save sensor readings to database
 for zone in zones:
     reading = SensorReading(
         zone_id=zone.id,

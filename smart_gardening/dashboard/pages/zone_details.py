@@ -4,17 +4,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 import streamlit as st
 from db.database import session, ZoneModel, PlantModel, SensorReading
-from core.zone import Zone
 from datetime import datetime, timedelta
 
-# Page configuration
 st.set_page_config(
     page_title="Zone Details - Smart Gardening Dashboard",
     page_icon="🌱",
     layout="wide"
 )
 
-# Custom CSS
 st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -53,7 +50,6 @@ st.markdown("""
         .stMetric [data-testid="metric-container"] div[data-testid="stMetricLabel"] {
             color: #2c3e50 !important;
         }
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
         .title {
             font-size: 36px;
             color: #35B925;
@@ -62,8 +58,8 @@ st.markdown("""
             margin-bottom: 30px;
         }
         .stButton > button {
-            background-color: #35B925;
-            color: white !important;
+            background-color: #e8f5e8;
+            color: #2c3e50 !important;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -73,27 +69,32 @@ st.markdown("""
             max-height: 50px;
         }
         .stButton > button:hover {
-            background-color: #754D33 !important;
-            color: white !important;
+            background-color: #d4e8d4 !important;
+            color: #2c3e50 !important;
         }
         .stButton > button:focus {
-            color: white !important;
+            color: #2c3e50 !important;
         }
-        /* Override any #2c3e50 color on buttons to white */
-        .stButton > button[style*="#2c3e50"] {
-            color: white !important;
+
+        /* Target remove buttons by their key attribute */
+        div[data-testid="stButton"] button[data-testid*="remove_"] {
+            background-color: #ffebee !important;
+            color: #c62828 !important;
+            border: 1px solid #c62828 !important;
+            font-weight: bold !important;
+            width: 50% !important;
+            margin-top: 16px !important;
         }
-        .stButton > button:hover[style*="#2c3e50"] {
-            color: white !important;
+        
+        div[data-testid="stButton"] button[data-testid*="remove_"]:hover {
+            background-color: #ffcdd2 !important;
+            color: #c62828 !important;
+            border: 1px solid #c62828 !important;
         }
-        .stButton > button:active[style*="#2c3e50"] {
-            color: white !important;
-        }
-        .stButton > button:focus[style*="#2c3e50"] {
-            color: white !important;
-        }
+        
+
         .zone-header {
-            background-color: #35B925;
+            background-color: #e8f5e8;
             color: #2c3e50;
             padding: 20px;
             border-radius: 15px;
@@ -122,20 +123,14 @@ st.markdown("""
             border-left: 4px solid #35B925;
             margin: 10px 0;
         }
-        .status-good {
-            color: white !important;
-            font-weight: bold;
-        }
-        .status-warning {
-            color: white !important;
-            font-weight: bold;
-        }
-        .status-critical {
-            color: white !important;
-            font-weight: bold;
-        }
+
         /* Paragraph text styling */
         p {
+            color: #2c3e50 !important;
+        }
+        
+        /* Ensure span elements have dark text */
+        span {
             color: #2c3e50 !important;
         }
         
@@ -200,7 +195,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Get zone ID from URL parameters or session state
 zone_id = st.query_params.get("zone_id", None)
 if not zone_id:
     zone_id = st.session_state.get("selected_zone_id")
@@ -208,34 +202,30 @@ if not zone_id:
 if not zone_id:
     st.error("No zone selected. Please go back to the dashboard and select a zone.")
     if st.button("← Back to Dashboard"):
-        st.switch_page("../app.py")
+        st.switch_page("app.py")
     st.stop()
 
-# Set URL parameter if not already set
 if not st.query_params.get("zone_id"):
     st.query_params["zone_id"] = str(zone_id)
 
-# Load zone data
 try:
     zone = session.query(ZoneModel).filter(ZoneModel.id == int(zone_id)).first()
     if not zone:
         st.error("Zone not found.")
-        if st.button("Back to Dashboard"):
+        if st.button("← Back to Dashboard"):
             st.switch_page("app.py")
         st.stop()
 except Exception as e:
     st.error(f"Error loading zone: {str(e)}")
-    if st.button("Back to Dashboard"):
+    if st.button("← Back to Dashboard"):
         st.switch_page("app.py")
     st.stop()
 
-# Back button
 col1, col2, col3 = st.columns([1, 3, 1])
 with col1:
-    if st.button("Back to Dashboard"):
+    if st.button("← Back to Dashboard"):
         st.switch_page("app.py")
 
-# Zone header
 with col2:
     st.markdown(f"""
     <div class="zone-header">
@@ -244,7 +234,6 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-# Zone details in columns
 col1, col2 = st.columns(2)
 
 with col1:
@@ -259,37 +248,67 @@ with col1:
 
 with col2:
     st.markdown("### Current Status", unsafe_allow_html=True)
-    # Simulated values
-    current_moisture = 45  # This would come from actual sensors
-    current_ph = 6.5
+    
+    latest_reading = session.query(SensorReading).filter(
+        SensorReading.zone_id == zone.id
+    ).order_by(SensorReading.timestamp.desc()).first()
+    
+    if latest_reading:
+        current_moisture = latest_reading.moisture
+        current_ph = latest_reading.ph
+    else:
+        current_moisture = 45
+        current_ph = 6.5
+    
     pump_status = "ON" if current_moisture < zone.moisture_threshold else "OFF"
     
     moisture_status_class = "status-good" if current_moisture >= zone.moisture_threshold else "status-warning"
     
+    if zone.ph_min <= current_ph <= zone.ph_max:
+        ph_status_class = "status-good"
+        ph_status_text = "🟢 Good"
+    elif current_ph < zone.ph_min:
+        ph_status_class = "status-warning"
+        ph_status_text = "🔴 Too Acidic"
+    else:
+        ph_status_class = "status-warning"
+        ph_status_text = "🔵 Too Alkaline"
+    
+    
     st.markdown(f"""
     <div class="metric-card">
-        <p><strong>Current Moisture:</strong> <span class="{moisture_status_class}">{current_moisture}%</span></p>
-        <p><strong>Current pH:</strong> {current_ph}</p>
-        <p><strong>Pump Status:</strong> <span class="status-{'good' if pump_status == 'ON' else 'warning'}">{pump_status}</span></p>
+        <p><strong>Current Moisture:</strong> <span>{current_moisture:.1f}%</span></p>
+        <p><strong>Current pH:</strong> {current_ph:.1f}</p>
+        <p><strong>Pump Status:</strong> <span>{pump_status}</span></p>
         <p><strong>Last Watered:</strong> {zone.last_watered.strftime('%Y-%m-%d %H:%M') if zone.last_watered is not None else 'Never'}</p>
     </div>
     """, unsafe_allow_html=True)
 
-# Plants in this zone
 st.markdown("### Plants in This Zone", unsafe_allow_html=True)
+
 
 plants = session.query(PlantModel).filter(PlantModel.zone_id == zone.id).all()
 
 if plants:
     for plant in plants:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h4>{plant.name}</h4>
-            <p><strong>Type:</strong> {plant.plant_type}</p>
-            <p><strong>Planted:</strong> {plant.planting_date.strftime('%B %d, %Y') if plant.planting_date else 'Unknown'}</p>
-            {f'<p><strong>Notes:</strong> {plant.notes}</p>' if plant.notes else ''}
-        </div>
-        """, unsafe_allow_html=True)
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>{plant.name}</h4>
+                <p><strong>Type:</strong> {plant.plant_type}</p>
+                <p><strong>Planted:</strong> {plant.planting_date.strftime('%B %d, %Y') if plant.planting_date else 'Unknown'}</p>
+                {f'<p><strong>Notes:</strong> {plant.notes}</p>' if plant.notes else ''}
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            if st.button("❌", key=f"remove_{plant.id}", type="secondary"):
+                st.session_state.remove_zone_id = zone.id
+                st.session_state.remove_plant_id = plant.id
+                st.switch_page("pages/remove_plant.py")
+
 else:
     st.markdown("""
     <div class="metric-card">
@@ -297,17 +316,14 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-# Recent sensor readings
 st.markdown("### Recent Sensor Readings", unsafe_allow_html=True)
 
-# Get recent readings (last 7 days)
 recent_readings = session.query(SensorReading).filter(
     SensorReading.zone_id == zone.id,
     SensorReading.timestamp >= datetime.now() - timedelta(days=7)
 ).order_by(SensorReading.timestamp.desc()).limit(10).all()
 
 if recent_readings:
-    # Prepare data for the chart
     chart_data = []
     for reading in recent_readings:
         chart_data.append({
@@ -316,33 +332,23 @@ if recent_readings:
             "pH": reading.ph
         })
     
-    # Create line chart
     import pandas as pd
     
-    # Convert to DataFrame for easier charting
     df = pd.DataFrame(chart_data)
     df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values('Date')  # Sort by date for proper line chart
+    df = df.sort_values('Date')
     
-    # Create tabs for chart and table view
     tab1, tab2 = st.tabs(["📊 Chart View", "📋 Table View"])
     
     with tab1:
-        # Line chart for moisture levels
         st.markdown("#### Moisture Levels Over Time")
         st.line_chart(df.set_index('Date')['Moisture (%)'])
         
-        # Line chart for pH levels
         st.markdown("#### pH Levels Over Time")
         st.line_chart(df.set_index('Date')['pH'])
-        
-        # Combined chart
-        st.markdown("#### Combined Sensor Readings")
-        combined_chart = df.set_index('Date')[['Moisture (%)', 'pH']]
-        st.line_chart(combined_chart)
+    
     
     with tab2:
-        # Display data in table format
         st.dataframe(df, use_container_width=True)
 else:
     st.markdown("""
@@ -351,7 +357,6 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-# Action buttons
 st.markdown("---")
 col1, col2, col3 = st.columns([1, 1, 1])
 

@@ -15,10 +15,8 @@ def init_database():
     """Initialize the database with new schema"""
     print("Initializing database with new schema...")
     
-    # Create all tables
     init_db()
     
-    # Create some default zones
     default_zones = [
         {
             'name': 'Tomato Garden',
@@ -51,7 +49,6 @@ def init_database():
         created_zones.append(db_zone)
         print(f"Created zone: {db_zone.name} with ID: {db_zone.id}")
     
-    # Add some sample plants
     sample_plants = [
         {'zone_id': 1, 'name': 'Cherry Tomato', 'plant_type': 'Tomato', 'notes': 'Sweet cherry variety'},
         {'zone_id': 2, 'name': 'Butterhead Lettuce', 'plant_type': 'Lettuce', 'notes': 'Tender butterhead variety'},

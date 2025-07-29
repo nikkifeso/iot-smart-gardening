@@ -10,8 +10,6 @@ def read_ph(zone_id: str) -> float:
     Returns:
         float: pH reading between 5.0-8.5
     """
-    # Generate realistic pH reading (5.0-8.5 range) for any zone
-    # This matches the behavior of the PHSensor class
     return round(random.uniform(5.0, 8.5), 2)
 
 
@@ -24,7 +22,6 @@ class PHSensor:
     
     def read(self) -> float:
         """Read current pH level"""
-        # Generate realistic pH reading (5.0-8.5 range for soil)
         reading = round(random.uniform(5.0, 8.5), 2)
         self.current_reading = reading
         return reading
