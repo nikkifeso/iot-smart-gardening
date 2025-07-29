@@ -57,7 +57,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Set moisture thresholds and pH ranges
 - Configure plant types and growing conditions
   ![add zone](screenshots/add-zone-1.png)
-  
+  <br>
   ![add zone](screenshots/add-zone-2.png)
 
 ### Plant Management
@@ -65,7 +65,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Add plants to specific zones
 - Track planting dates and notes
   ![add plant](screenshots/add-plant-1.png)
-  
+  <br>
   ![add plant](screenshots/add-plant-2.png)
 - View plants by zone
 - Remove plants with confirmation dialog
