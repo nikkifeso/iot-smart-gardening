@@ -55,6 +55,9 @@ def remove_plant(plant_id: int, db_session=None) -> bool:
     Returns:
         bool: True if plant was successfully removed, False otherwise
     """
+    if plant_id is None or not isinstance(plant_id, int) or plant_id <= 0:
+        return False
+        
     if db_session is None:
         db_session = session
         
@@ -80,6 +83,8 @@ def get_plant_by_id(plant_id: int) -> PlantModel:
     Returns:
         PlantModel: The plant object or None if not found
     """
+    if plant_id is None or not isinstance(plant_id, int) or plant_id <= 0:
+        return None
     return session.query(PlantModel).filter(PlantModel.id == plant_id).first()
 
 def get_zone_by_id(zone_id: int) -> ZoneModel:
@@ -92,6 +97,8 @@ def get_zone_by_id(zone_id: int) -> ZoneModel:
     Returns:
         ZoneModel: The zone object or None if not found
     """
+    if zone_id is None or not isinstance(zone_id, int) or zone_id <= 0:
+        return None
     return session.query(ZoneModel).filter(ZoneModel.id == zone_id).first()
 
 def init_db():
