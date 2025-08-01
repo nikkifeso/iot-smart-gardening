@@ -5,15 +5,16 @@ Smart Gardening Dashboard - Monitor and manage your garden zones
 import sys
 import os
 import datetime
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import time
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import streamlit as st
-from simulator.simulator import SensorSimulator, get_default_zones
-from actuators.pump import control_pump
-from config import ZONES, MOISTURE_THRESHOLDS, PH_RANGES
-from core.zone import Zone
+from smart_gardening.simulator.simulator import SensorSimulator, get_default_zones
+from smart_gardening.actuators.pump import control_pump
+from smart_gardening.config import ZONES, MOISTURE_THRESHOLDS, PH_RANGES
+from smart_gardening.core.zone import Zone
 
-from db.database import init_db, session, SensorReading, ZoneModel, PlantModel
+from smart_gardening.db.database import init_db, session, SensorReading, ZoneModel, PlantModel
 init_db()
 
 st.set_page_config(
@@ -22,6 +23,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+st.markdown("""
+    <meta http-equiv="refresh" content="30">
+""", unsafe_allow_html=True)
 
 st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -320,6 +325,93 @@ def load_zones_from_db():
     
     return zones
 
+def main_dashboard():
+    """Main dashboard function that displays the garden zones"""
+    # Initialize zones if not in session state
+    if "zones" not in st.session_state:
+        db_zones = load_zones_from_db()
+        if not db_zones:
+            default_zones = get_default_zones()
+            for zone in default_zones:
+                db_zone = ZoneModel(**zone.to_dict())
+                session.add(db_zone)
+                session.commit()
+                zone.id = db_zone.id
+            db_zones = load_zones_from_db()
+        st.session_state.zones = db_zones
+
+    zones = st.session_state.zones
+    simulator = SensorSimulator(zones)
+    simulator.simulate()
+
+    st.markdown("### Garden Zones Overview", unsafe_allow_html=True)
+    zone_summary_cols = st.columns(len(zones))
+    for i, zone in enumerate(zones):
+        with zone_summary_cols[i]:
+            moisture_status = "🟢 Good" if zone.moisture >= MOISTURE_THRESHOLDS.get(zone.id, 30) else "🔴 Low"
+            if zone.ph_out_of_range():
+                if zone.ph < zone.ph_range[0]:
+                    ph_status = "🔴 Too Acidic"
+                else:
+                    ph_status = "🔵 Too Alkaline"
+            else:
+                ph_status = "🟢 Good"
+            st.markdown(f"""
+            <div class='metric-container'>
+            <strong>Zone {zone.id} - {zone.name}</strong><br>
+            Plant Type: {zone.plant_type}<br>
+            Moisture: {moisture_status} <br>
+            pH: {ph_status}
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
+
+    cols = st.columns(len(zones))
+
+    for col, zone in zip(cols, zones):
+        moisture = zone.moisture
+        ph = zone.ph
+        threshold = MOISTURE_THRESHOLDS.get(zone.id, 30)
+        pump_status = zone.pump_status
+
+        if moisture < threshold:
+            control_pump(zone.id, True)
+            pump_status = "ON"
+            zone.last_watered = datetime.datetime.now()
+            db_zone = session.query(ZoneModel).filter(ZoneModel.id == zone.id).first()
+            if db_zone:
+                db_zone.last_watered = zone.last_watered
+                session.commit()
+        else:
+            control_pump(zone.id, False)
+            pump_status = "OFF"
+
+        pump_color = "green" if pump_status == "ON" else "red"
+
+        with col:
+            if st.button(f"Zone {zone.name}", key=f"zone_{zone.id}_header_btn"):
+                st.session_state.selected_zone_id = zone.id
+                st.switch_page("pages/zone_details.py")
+            
+            st.metric(label="Moisture Level (%)", value=moisture)
+            st.metric(label="pH Level", value=ph, delta=None)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Save sensor readings to database
+    for zone in zones:
+        reading = SensorReading(
+            zone_id=zone.id,
+            moisture=zone.moisture,
+            ph=zone.ph
+        )
+        session.add(reading)
+        session.commit()
+
+# Initialize the dashboard
 if "zones" not in st.session_state:
     db_zones = load_zones_from_db()
     if not db_zones:
@@ -332,72 +424,8 @@ if "zones" not in st.session_state:
         db_zones = load_zones_from_db()
     st.session_state.zones = db_zones
 
-zones = st.session_state.zones
-simulator = SensorSimulator(zones)
-simulator.simulate()
+# Run the main dashboard
+main_dashboard()
 
-st.markdown("### Garden Zones Overview", unsafe_allow_html=True)
-zone_summary_cols = st.columns(len(zones))
-for i, zone in enumerate(zones):
-    with zone_summary_cols[i]:
-        moisture_status = "🟢 Good" if zone.moisture >= MOISTURE_THRESHOLDS.get(zone.id, 30) else "🔴 Low"
-        if zone.ph_out_of_range():
-            if zone.ph < zone.ph_range[0]:
-                ph_status = "🔴 Too Acidic"
-            else:
-                ph_status = "🔵 Too Alkaline"
-        else:
-            ph_status = "🟢 Good"
-        st.markdown(f"""
-        <div class='metric-container'>
-        <strong>Zone {zone.id} - {zone.name}</strong><br>
-        Plant Type: {zone.plant_type}<br>
-        Moisture: {moisture_status} <br>
-        pH: {ph_status}
-        </div>
-        """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
-
-cols = st.columns(len(zones))
-
-for col, zone in zip(cols, zones):
-    moisture = zone.moisture
-    ph = zone.ph
-    threshold = MOISTURE_THRESHOLDS.get(zone.id, 30)
-    pump_status = zone.pump_status
-
-    if moisture < threshold:
-        control_pump(zone.id, True)
-        pump_status = "ON"
-        zone.last_watered = datetime.datetime.now()
-        db_zone = session.query(ZoneModel).filter(ZoneModel.id == zone.id).first()
-        if db_zone:
-            db_zone.last_watered = zone.last_watered
-            session.commit()
-    else:
-        control_pump(zone.id, False)
-        pump_status = "OFF"
-
-    pump_color = "green" if pump_status == "ON" else "red"
-
-    with col:
-        if st.button(f"Zone {zone.name}", key=f"zone_{zone.id}_header_btn"):
-            st.session_state.selected_zone_id = zone.id
-            st.switch_page("pages/zone_details.py")
-        
-        st.metric(label="Moisture Level (%)", value=moisture)
-        st.metric(label="pH Level", value=ph, delta=None)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-for zone in zones:
-    reading = SensorReading(
-        zone_id=zone.id,
-        moisture=zone.moisture,
-        ph=zone.ph
-    )
-    session.add(reading)
-    session.commit()
+# Auto-refresh indicator
+st.markdown("🔄 **Dashboard refreshes every 30 seconds automatically**")
