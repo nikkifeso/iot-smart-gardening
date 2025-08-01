@@ -147,7 +147,7 @@ class TestAdvancedAutomationLogic(unittest.TestCase):
     def test_complete_automation_cycle(self):
         zone = Zone(moisture=25, moisture_threshold=40)
         
-        self.assertEqual(zone.pump_status, "OFF")
+        self.assertFalse(zone.pump_status)
         self.assertIsNone(zone.last_watering_time)
         self.assertIsNone(zone.pump_start_time)
         
