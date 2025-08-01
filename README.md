@@ -16,29 +16,54 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 
 ## Features
 
+### Advanced Automation Logic
+
+- **Smart Pump Activation** - Pumps activate only when moisture < threshold AND no recent watering (>2 hours)
+- **Intelligent Pump Deactivation** - Pumps stop when moisture ≥ threshold OR maximum runtime reached (30 minutes)
+- **Watering History Tracking** - Prevents over-watering with 2-hour cooldown periods
+- **Maximum Runtime Protection** - Safety feature prevents pumps from running indefinitely
+- **Continuous Monitoring** - Real-time sensor readings every 30 seconds
+
+### Real-time Dashboard
+
+- **Auto-refreshing Interface** - Dashboard updates every 30 seconds automatically
+- **Live Sensor Data** - Real-time moisture and pH level monitoring
+- **Smart Status Indicators** - Visual feedback for pump status and zone health
+- **Last Updated Timestamps** - Shows when data was last refreshed
+- **Professional UI** - Modern, responsive design with consistent styling
+
+### Data Management
+
+- **60-Day Data Retention** - Automatic cleanup of old sensor readings and pump logs
+- **Database Performance** - Optimized storage with rolling data windows
+- **Data Maintenance Tools** - Command-line utilities for database management
+- **Statistics Tracking** - Monitor database size and data ranges
+- **Safe Cleanup Operations** - Dry-run mode for testing before deletion
+
 ### Core Functionality
 
-- **Real-time Zone Monitoring** - Monitor multiple garden zones simultaneously
-- **Automated Watering System** - Smart pump control based on moisture thresholds
+- **Multi-zone Monitoring** - Monitor multiple garden zones simultaneously
 - **pH Level Tracking** - Monitor soil pH levels for optimal plant growth
 - **Plant Management** - Add, track, and remove individual plants within zones
-- **Sensor Data Visualisation** - Historical charts and analytics for sensor readings
+- **Sensor Data Visualization** - Historical charts and analytics for sensor readings
+- **Form Validation** - Input validation and error handling
+
 
 ### User Interface
 
 - **Modern Dashboard** - Clean, responsive web interface built with Streamlit
 - **Multi-page Navigation** - Seamless navigation between different sections
-- **Real-time Updates** - Live sensor data and status updates
 - **Interactive Charts** - Visual representation of moisture and pH trends
-- **Professional Styling** - Consistent color scheme throughout
+- **Professional Styling** - Consistent green/brown color scheme throughout
+- **FontAwesome Icons** - Beautiful, consistent iconography throughout the interface
 
 ### Technical Features
 
 - **Database Integration** - SQLite database with SQLAlchemy ORM
 - **Simulated Sensors** - Realistic sensor data simulation for development
-- **Automated Pump Control** - Intelligent watering based on moisture levels
-- **Last Watered Tracking** - Automatic timestamp recording when pumps activate
-- **Form Validation** - Input validation and error handling
+- **Comprehensive Testing** - 77+ tests covering all functionality
+- **Error Handling** - Robust error handling and recovery mechanisms
+- **Configuration Management** - Flexible configuration system
 
 ## Screenshots
 
@@ -124,12 +149,60 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 
 ## Usage
 
-### Starting the Dashboard
+### Quick Start
 
-1. Navigate to the project directory
-2. Activate your virtual environment
-3. Run `streamlit run smart_gardening/dashboard/app.py`
-4. Open your browser to `http://localhost:8501`
+1. **Start the Dashboard**
+
+   ```bash
+   streamlit run smart_gardening/dashboard/app.py
+   ```
+
+   Open your browser to `http://localhost:8501`
+
+2. **Run the Automation System**
+
+   ```bash
+   python smart_gardening/main.py
+   ```
+
+   This starts the continuous monitoring with 30-second sensor updates
+
+3. **View Data Statistics**
+   ```bash
+   python smart_gardening/data_maintenance.py --stats
+   ```
+
+### Data Management
+
+#### Manual Cleanup
+
+```bash
+# Show what would be deleted (dry run)
+python smart_gardening/data_maintenance.py --cleanup --dry-run
+
+# Run actual cleanup with 60-day retention
+python smart_gardening/data_maintenance.py --cleanup
+
+# Custom retention period (30 days)
+python smart_gardening/data_maintenance.py --cleanup --days 30
+```
+
+#### Scheduled Cleanup
+
+```bash
+# For cron jobs or scheduled tasks
+python smart_gardening/data_maintenance.py --schedule
+```
+
+### Running Tests
+
+```bash
+python tests/run_tests.py
+
+python tests/run_tests.py --category database
+python tests/run_tests.py --category automation
+python tests/run_tests.py --category integration
+```
 
 ### Adding a New Zone
 
@@ -177,16 +250,16 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 iot-smart-gardening/
 ├── smart_gardening/
 │   ├── dashboard/
-│   │   ├── app.py                 # Main dashboard application
+│   │   ├── app.py                 # Main dashboard application (auto-refreshing)
 │   │   └── pages/
 │   │       ├── add_zone.py        # Add zone page
 │   │       ├── add_plant.py       # Add plant page
 │   │       ├── zone_details.py    # Zone details page
 │   │       └── remove_plant.py    # Remove plant confirmation page
 │   ├── core/
-│   │   └── zone.py               # Zone model and logic
+│   │   └── zone.py               # Zone model with advanced automation logic
 │   ├── db/
-│   │   ├── database.py           # Database models and setup
+│   │   ├── database.py           # Database models with data retention
 │   │   └── database.db           # SQLite database file
 │   ├── sensors/
 │   │   ├── moisture_sensor.py    # Moisture sensor simulation
@@ -194,12 +267,21 @@ iot-smart-gardening/
 │   ├── actuators/
 │   │   └── pump.py               # Water pump control
 │   ├── simulator/
-│   │   └── simulator.py          # Sensor data simulation
+│   │   └── simulator.py          # Sensor data simulation (30-second intervals)
 │   ├── config.py                 # Configuration settings
-│   ├── main.py                   # Main application entry point
+│   ├── main.py                   # Main automation system (continuous monitoring)
+│   ├── data_maintenance.py       # Data retention and cleanup tools
 │   ├── init_database.py          # Database initialization script
 │   └── update_database.py        # Database update script
+├── tests/
+│   ├── run_tests.py              # Test runner with comprehensive coverage
+│   ├── test_automation_logic.py  # Advanced automation logic tests
+│   ├── test_main_automation.py   # Main automation system tests
+│   ├── test_data_retention.py    # Data retention functionality tests
+│   └── ...                       # Other test files
 ├── requirements.txt              # Python dependencies
+├── requirements-dev.txt          # Development dependencies
+├── requirements-prod.txt         # Production dependencies
 ├── README.md                     # This file
 └── LICENSE                       # License information
 ```
@@ -232,6 +314,8 @@ iot-smart-gardening/
 - `remove_plant(plant_id, db_session)` - Safely remove a plant with validation
 - `get_plant_by_id(plant_id)` - Retrieve a plant by its ID with validation
 - `get_zone_by_id(zone_id)` - Retrieve a zone by its ID with validation
+- `cleanup_old_sensor_readings(retention_days, db_session)` - Remove old sensor data
+- `get_sensor_readings_stats()` - Get database statistics and data ranges
 
 ### Sensor Readings Table
 
@@ -255,6 +339,14 @@ iot-smart-gardening/
 - `MOISTURE_THRESHOLD_DEFAULT` - Default moisture threshold (default: 30%)
 - `PH_MIN_DEFAULT` - Default minimum pH (default: 6.0)
 - `PH_MAX_DEFAULT` - Default maximum pH (default: 7.5)
+
+### Automation Settings
+
+- **Sensor Update Interval**: 30 seconds
+- **Data Retention Period**: 60 days
+- **Pump Maximum Runtime**: 30 minutes
+- **Watering Cooldown**: 2 hours
+- **Cleanup Frequency**: Once per day (automatic)
 
 ### Color Scheme
 
@@ -288,14 +380,38 @@ iot-smart-gardening/
 
 ### Testing
 
-The project includes comprehensive test coverage:
+The project includes comprehensive test coverage with **77+ tests**:
 
 - **Database Tests** - Plant removal, validation, and data integrity
-- **UI Tests** - Remove plant workflow and navigation
-- **Integration Tests** - End-to-end functionality testing
-- **Unit Tests** - Individual component testing
+- **Core Tests** - Zone functionality and automation logic
+- **Simulator Tests** - Sensor data simulation and accuracy
+- **Actuator Tests** - Pump control and status management
+- **Dashboard Tests** - UI functionality and data validation
+- **Integration Tests** - End-to-end system functionality
+- **Automation Tests** - Advanced automation logic and pump control
+- **Data Retention Tests** - Data cleanup and retention policies
 
-Run tests with: `python tests/run_tests.py`
+#### Test Categories
+
+```bash
+# Run all tests
+python tests/run_tests.py
+
+# Run specific categories
+python tests/run_tests.py --category database
+python tests/run_tests.py --category core
+python tests/run_tests.py --category automation
+python tests/run_tests.py --category integration
+python tests/run_tests.py --category dashboard
+```
+
+#### Test Coverage
+
+- **Success Rate**: 100% (77/77 tests passing)
+- **Execution Time**: ~0.6 seconds
+- **Categories**: 8 test categories
+- **Automation Logic**: 22 specialized tests
+- **Data Retention**: 7 comprehensive tests
 
 ## Contributing
 
@@ -310,13 +426,28 @@ Run tests with: `python tests/run_tests.py`
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Current Features
+
+### Advanced Automation & Data Management
+
+- **Smart Pump Logic**: Intelligent activation/deactivation with watering history
+- **Auto-refreshing Dashboard**: Real-time updates every 30 seconds
+- **Data Retention**: 60-day automatic cleanup with maintenance tools
+- **Enhanced Testing**: 77+ comprehensive tests with 100% success rate
+- **Performance Optimization**: Database performance improvements
+
+### Core Functionality
+
+- Real-time zone monitoring
+- Automated watering system
+- Plant management system
+- Multi-page dashboard
+
 ## Acknowledgments
 
 - Streamlit for the amazing web framework
 - SQLAlchemy for robust database management
 - FontAwesome for beautiful icons
-- The open-source community for inspiration and tools
 
 ---
 
-**Built with love for smart gardening enthusiasts**

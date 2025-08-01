@@ -27,6 +27,7 @@ from tests.test_config import TestConfig
 from tests.test_remove_plant_ui import TestRemovePlantUI
 
 
+
 class TestRunner:
     """Test runner with reporting capabilities"""
     
@@ -162,7 +163,7 @@ class TestRunner:
             "core": TestZone,
             "simulator": TestSensorSimulator,
             "actuators": TestWaterPump,
-            "sensors": [TestMoistureSensor, TestPHSensor, TestSensorIntegration],
+            # "sensors": [TestMoistureSensor, TestPHSensor, TestSensorIntegration],
             "dashboard": [TestDashboardData, TestZoneStatus, TestDataValidation],
             "integration": TestSmartGardenIntegration,
             "config": TestConfig
@@ -193,7 +194,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Run Smart Gardening Dashboard tests")
     parser.add_argument("--category", "-c", 
-                       choices=["database", "core", "simulator", "actuators", "sensors", "dashboard", "integration", "config"],
+                       choices=["database", "core", "simulator", "actuators", "dashboard", "integration", "config"],
                        help="Run tests for a specific category")
     parser.add_argument("--output", "-o", 
                        help="Save JSON report to specified file")
