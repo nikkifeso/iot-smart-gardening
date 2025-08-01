@@ -449,5 +449,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - SQLAlchemy for robust database management
 - FontAwesome for beautiful icons
 
----
-
