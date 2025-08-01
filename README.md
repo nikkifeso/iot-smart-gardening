@@ -10,7 +10,6 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [Database Schema](#database-schema)
-- [API Endpoints](#api-endpoints)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [License](#license)
@@ -49,6 +48,7 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - **Sensor Data Visualization** - Historical charts and analytics for sensor readings
 - **Form Validation** - Input validation and error handling
 
+
 ### User Interface
 
 - **Modern Dashboard** - Clean, responsive web interface built with Streamlit
@@ -73,20 +73,30 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Moisture and pH level monitoring
 - Pump status indicators
 - Last watered timestamps
+![home](screenshots/Homepage.png)
 
 ### Zone Management
 
 - Add new garden zones with custom configurations
 - Set moisture thresholds and pH ranges
 - Configure plant types and growing conditions
+  ![add zone](screenshots/add-zone-1.png)
+  <br>
+  <br>
+  ![add zone](screenshots/add-zone-2.png)
 
 ### Plant Management
 
 - Add plants to specific zones
 - Track planting dates and notes
+  ![add plant](screenshots/add-plant-1.png)
+  <br>
+  <br>
+  ![add plant](screenshots/add-plant-2.png)
 - View plants by zone
 - Remove plants with confirmation dialog
 - Maintain data integrity during plant removal
+![remove plant](screenshots/remove-plant.png)
 
 ### Zone Details
 
@@ -94,6 +104,8 @@ A comprehensive IoT-based smart gardening system with real-time monitoring, auto
 - Current sensor readings and status
 - Historical data visualization
 - Plant inventory within zones
+![zone details](screenshots/zone-details-1.png)
+![zone details](screenshots/zone-details-2.png)
 
 ## Installation
 
@@ -324,7 +336,6 @@ iot-smart-gardening/
 
 ### Environment Variables
 
-- `DATABASE_URL` - Database connection string (default: SQLite)
 - `MOISTURE_THRESHOLD_DEFAULT` - Default moisture threshold (default: 30%)
 - `PH_MIN_DEFAULT` - Default minimum pH (default: 6.0)
 - `PH_MAX_DEFAULT` - Default maximum pH (default: 7.5)
@@ -340,7 +351,6 @@ iot-smart-gardening/
 ### Color Scheme
 
 - **Primary Green**: `#35B925` - Main brand color
-- **Secondary Brown**: `#754D33` - Hover states and accents
 - **Light Green**: `#D4fd0` - Background elements
 - **Medium Green**: `#88c030` - Secondary elements
 - **Text Color**: `#2c3e50` - Dark blue-gray for readability
@@ -438,8 +448,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Streamlit for the amazing web framework
 - SQLAlchemy for robust database management
 - FontAwesome for beautiful icons
-- The open-source community for inspiration and tools
 
 ---
 
-**Built with love for smart gardening enthusiasts**
