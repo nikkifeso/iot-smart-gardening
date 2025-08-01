@@ -81,7 +81,7 @@ class TestDataRetention(unittest.TestCase):
         
         self.assertEqual(session.query(PumpLog).count(), 2)
         
-        deleted_count = cleanup_old_sensor_readings(retention_days=60)
+        deleted_count = cleanup_old_pump_logs(retention_days=60)
         
         self.assertEqual(deleted_count, 1)
         self.assertEqual(session.query(PumpLog).count(), 1)
